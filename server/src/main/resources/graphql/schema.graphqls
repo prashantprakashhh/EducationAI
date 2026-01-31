@@ -1,0 +1,13 @@
+type Query {
+    # Fetch all users for the Admin panel
+    allUsers: [User]
+    # Check system health
+    systemStatus: String
+}
+
+type User {
+    id: ID!
+    username: String!
+    fullName: String
+    role: String
+}
