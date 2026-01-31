@@ -1,13 +1,26 @@
 type Query {
-    # Fetch all users for the Admin panel
+    # Fetch list of all users
     allUsers: [User]
-    # Check system health
+    # Check if the system is live
     systemStatus: String
+}
+
+type Mutation {
+    # THIS WAS MISSING: The ability to create a user
+    createUser(username: String!, fullName: String!, role: Role!): User
 }
 
 type User {
     id: ID!
     username: String!
     fullName: String
-    role: String
+    role: Role
+    status: String
+}
+
+enum Role {
+    ADMIN
+    TEACHER
+    STUDENT
+    PARENT
 }
