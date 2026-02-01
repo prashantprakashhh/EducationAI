@@ -1,2 +1,5 @@
 .env
 node_modules/
+application.propeties
+.DS_Store
+.vscode/

@@ -22,6 +22,16 @@ const GET_ADMIN_DATA = gql`
       role
     }
     systemStatus
+    adminStats {
+      totalUsers
+      totalStudents
+      totalTeachers
+      activeUsersToday
+      totalQuizzesToday
+      totalMessagesToday
+      averageAccuracy
+      totalBadgesAwarded
+    }
   }
 `;
 
@@ -415,15 +425,21 @@ export default function AdminDashboard() {
     );
   }, [allUsers, searchQuery]);
 
-  // Calculate stats
+  // Calculate stats from real data
   const stats = useMemo(() => {
+    const adminStats = data?.adminStats;
     return {
-      total: allUsers.length,
-      teachers: allUsers.filter(u => u.role === 'TEACHER').length,
-      students: allUsers.filter(u => u.role === 'STUDENT').length,
+      total: adminStats?.totalUsers || allUsers.length,
+      teachers: adminStats?.totalTeachers || allUsers.filter(u => u.role === 'TEACHER').length,
+      students: adminStats?.totalStudents || allUsers.filter(u => u.role === 'STUDENT').length,
       admins: allUsers.filter(u => u.role === 'ADMIN').length,
+      activeToday: adminStats?.activeUsersToday || 0,
+      quizzesToday: adminStats?.totalQuizzesToday || 0,
+      messagesToday: adminStats?.totalMessagesToday || 0,
+      avgAccuracy: adminStats?.averageAccuracy || 0,
+      totalBadges: adminStats?.totalBadgesAwarded || 0,
     };
-  }, [allUsers]);
+  }, [allUsers, data?.adminStats]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -528,13 +544,12 @@ export default function AdminDashboard() {
             label="Total Users" 
             value={stats.total} 
             icon={Users} 
-            trend="+12%" 
             color="blue"
             delay={0}
           />
           <StatCard 
-            label="Teachers" 
-            value={stats.teachers} 
+            label="Active Today" 
+            value={stats.activeToday} 
             icon={GraduationCap} 
             color="purple"
             delay={0.1}
@@ -543,13 +558,12 @@ export default function AdminDashboard() {
             label="Students" 
             value={stats.students} 
             icon={BookOpen} 
-            trend="+8%" 
             color="amber"
             delay={0.2}
           />
           <StatCard 
-            label="System Load" 
-            value="12%" 
+            label="Quizzes Today" 
+            value={stats.quizzesToday} 
             icon={Zap} 
             color="emerald"
             delay={0.3}

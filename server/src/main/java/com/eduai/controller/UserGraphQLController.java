@@ -1,5 +1,6 @@
 package com.eduai.controller;
 
+import com.eduai.dto.AuthPayload;
 import com.eduai.model.User;
 import com.eduai.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +26,25 @@ public class UserGraphQLController {
         return "EduAI Neural Core Online";
     }
 
+    // --- Authentication Mutations ---
+
     @MutationMapping
-    public User createUser(@Argument String username, 
-                          @Argument String fullName, 
-                          @Argument String role) {
-        return userService.createUser(username, fullName, User.Role.valueOf(role));
+    public AuthPayload register(@Argument("input") RegisterInput input) {
+        return userService.register(
+            input.username(),
+            input.email(),
+            input.password(),
+            input.fullName(),
+            User.Role.valueOf(input.role())
+        );
     }
+
+    @MutationMapping
+    public AuthPayload login(@Argument("input") LoginInput input) {
+        return userService.login(input.email(), input.password());
+    }
+
+    // --- Input Records (DTOs) matching GraphQL Schema ---
+    public record RegisterInput(String username, String email, String password, String fullName, String role) {}
+    public record LoginInput(String email, String password) {}
 }

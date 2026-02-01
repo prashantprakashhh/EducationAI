@@ -27,4 +27,9 @@ public class ChatGraphQLController {
                                @Argument String persona) {
         return socraticAiService.processUserMessage(userId, content, persona);
     }
+    
+    @MutationMapping
+    public Boolean clearChatHistory(@Argument Long userId) {
+        return socraticAiService.clearChatHistory(userId);
+    }
 }

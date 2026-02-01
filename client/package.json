@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@apollo/client": "^3.11.0",
+    "@apollo/client": "^3.14.0",
     "axios": "^1.13.4",
     "clsx": "^2.1.1",
     "framer-motion": "^12.29.2",

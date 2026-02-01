@@ -1,6 +1,4 @@
-# ============================================
 # EduAI GraphQL Schema
-# ============================================
 
 type Query {
     # User Management
@@ -9,23 +7,128 @@ type Query {
     
     # Chat / AI
     chatHistory(userId: ID!): [Message]
+    
+    # Student Profile
+    studentProfile(userId: ID!): StudentProfile
+    isProfileComplete(userId: ID!): Boolean
+    allStudentProfiles: [StudentProfile]
+    
+    # AI Features
+    studySuggestions(userId: ID!): String
+    generateQuiz(userId: ID!, subject: String!): QuizQuestion
+    
+    # Feedback
+    feedbackForMessage(messageId: ID!): AiFeedback
+    myFeedback(userId: ID!): [AiFeedback]
+    hasFeedback(userId: ID!, messageId: ID!): Boolean
+    feedbackAnalytics: FeedbackAnalytics
+    personaRating(persona: String!): Float
+    
+    # Progress & Achievements
+    progressStats(userId: ID!): ProgressStats
+    userBadges(userId: ID!): [Badge]
+    recentQuizzes(userId: ID!, limit: Int): [QuizResult]
+    
+    # Admin Stats
+    adminStats: AdminStats
 }
 
 type Mutation {
-    # User Management
-    createUser(username: String!, fullName: String!, role: Role!): User
+    # Authentication
+    register(input: RegisterInput!): AuthPayload
+    login(input: LoginInput!): AuthPayload
     
+    # User Management (Admin)
+    createUser(username: String!, fullName: String!, role: Role!): User
+
     # Chat / AI
     sendMessage(userId: ID!, content: String!, persona: String!): Message
+    chatWithTutor(userId: ID!, message: String!, persona: String): Message
+    clearChatHistory(userId: ID!): Boolean
+    
+    # Student Profile
+    createStudentProfile(
+        userId: ID!
+        displayName: String!
+        dateOfBirth: String!
+        gradeLevel: GradeLevel!
+        school: String
+        course: String
+        interests: [String]
+    ): StudentProfile
+    
+    updateStudentProfile(
+        userId: ID!
+        displayName: String
+        dateOfBirth: String
+        gradeLevel: GradeLevel
+        school: String
+        course: String
+        interests: [String]
+        learningStyle: LearningStyle
+        learningGoals: String
+        avatarUrl: String
+    ): StudentProfile
+    
+    deleteStudentProfile(userId: ID!): Boolean
+    
+    # Feedback
+    submitFeedback(
+        userId: ID!
+        messageId: ID!
+        rating: Int!
+        category: FeedbackCategory
+        comment: String
+        wasHelpful: Boolean!
+    ): AiFeedback
+    
+    quickFeedback(
+        userId: ID!
+        messageId: ID!
+        wasHelpful: Boolean!
+    ): AiFeedback
+    
+    deleteFeedback(feedbackId: ID!): Boolean
+    
+    # Quiz/Progress Tracking
+    startQuizSession(
+        userId: ID!
+        subject: String!
+        topic: String
+        quizType: QuizType!
+        totalQuestions: Int!
+    ): QuizSession
+    
+    completeQuizSession(
+        sessionId: ID!
+        correctAnswers: Int!
+        wrongAnswers: Int!
+    ): QuizResult
 }
 
-# ============================================
-# User Types
-# ============================================
+input RegisterInput {
+    username: String!
+    email: String!
+    password: String!
+    fullName: String!
+    role: Role!
+}
 
+input LoginInput {
+    email: String!
+    password: String!
+}
+
+type AuthPayload {
+    token: String!
+    user: User!
+}
+
+# User Types
 type User {
     id: ID!
     username: String!
+    email: String
     fullName: String
     role: Role
 }
@@ -37,10 +140,7 @@ enum Role {
     PARENT
 }
 
-# ============================================
 # Message / Chat Types
-# ============================================
-
 type Message {
     id: ID!
     content: String!
@@ -59,4 +159,167 @@ enum MessageType {
     TEXT
     WIDGET_GRAPH
     HOMEWORK_HIGHLIGHT
+}
+
+# Student Profile Types
+type StudentProfile {
+    id: ID!
+    displayName: String!
+    dateOfBirth: String!
+    age: Int
+    gradeLevel: GradeLevel!
+    school: String
+    course: String
+    interests: [String]
+    preferredLearningStyle: LearningStyle
+    learningGoals: String
+    totalXp: Int
+    currentStreak: Int
+    lastActiveDate: String
+    avatarUrl: String
+    profileCompleted: Boolean
+    level: Int
+    xpToNextLevel: Int
+}
+
+enum GradeLevel {
+    GRADE_1
+    GRADE_2
+    GRADE_3
+    GRADE_4
+    GRADE_5
+    GRADE_6
+    GRADE_7
+    GRADE_8
+    GRADE_9
+    GRADE_10
+    GRADE_11
+    GRADE_12
+}
+
+enum LearningStyle {
+    VISUAL
+    AUDITORY
+    READING_WRITING
+    KINESTHETIC
+}
+
+# AI Quiz Types
+type QuizQuestion {
+    question: String!
+    options: [String!]!
+    correctAnswer: String!
+    explanation: String
+}
+
+# Feedback Types
+type AiFeedback {
+    id: ID!
+    rating: Int!
+    category: FeedbackCategory
+    comment: String
+    persona: String
+    topic: String
+    wasHelpful: Boolean!
+    createdAt: String
+}
+
+enum FeedbackCategory {
+    EXPLANATION_CLARITY
+    RESPONSE_RELEVANCE
+    DIFFICULTY_LEVEL
+    ENGAGEMENT
+    TECHNICAL_ERROR
+    OTHER
+}
+
+type FeedbackAnalytics {
+    totalFeedback: Int
+    helpfulCount: Int
+    ratingsByPersona: [PersonaRating]
+    feedbackByCategory: [CategoryCount]
+}
+
+type PersonaRating {
+    persona: String!
+    averageRating: Float!
+}
+
+type CategoryCount {
+    category: FeedbackCategory!
+    count: Int!
+}
+
+# Progress & Achievement Types
+type ProgressStats {
+    totalLearningMinutes: Int!
+    totalLearningHours: Float!
+    totalLearningDays: Int!
+    totalQuizzes: Int!
+    averageQuizAccuracy: Float!
+    perfectScores: Int!
+    totalXp: Int!
+    currentStreak: Int!
+    totalChatMessages: Int!
+    totalBadges: Int!
+}
+
+type Badge {
+    id: ID!
+    badgeType: String!
+    level: BadgeLevel!
+    name: String!
+    description: String
+    icon: String
+    earnedAt: String!
+}
+
+enum BadgeLevel {
+    BRONZE
+    SILVER
+    GOLD
+    PLATINUM
+}
+
+type QuizSession {
+    id: ID!
+    subject: String!
+    topic: String
+    quizType: QuizType!
+    totalQuestions: Int!
+    status: String!
+}
+
+type QuizResult {
+    id: ID!
+    subject: String!
+    topic: String
+    quizType: String!
+    totalQuestions: Int!
+    correctAnswers: Int!
+    wrongAnswers: Int!
+    accuracy: Float!
+    xpEarned: Int!
+    completedAt: String
+    durationSeconds: Int
+    status: String
+}
+
+enum QuizType {
+    QUICK_QUIZ
+    PREPARATORY
+    TOPIC_PRACTICE
+    DAILY_CHALLENGE
+}
+
+# Admin Stats
+type AdminStats {
+    totalUsers: Int!
+    totalStudents: Int!
+    totalTeachers: Int!
+    activeUsersToday: Int!
+    totalQuizzesToday: Int!
+    totalMessagesToday: Int!
+    averageAccuracy: Float!
+    totalBadgesAwarded: Int!
 }
