@@ -1,21 +1,33 @@
+# ============================================
+# EduAI GraphQL Schema
+# ============================================
+
 type Query {
-    # Fetch list of all users
+    # User Management
     allUsers: [User]
-    # Check if the system is live
     systemStatus: String
+    
+    # Chat / AI
+    chatHistory(userId: ID!): [Message]
 }
 
 type Mutation {
-    # THIS WAS MISSING: The ability to create a user
+    # User Management
     createUser(username: String!, fullName: String!, role: Role!): User
+    
+    # Chat / AI
+    sendMessage(userId: ID!, content: String!, persona: String!): Message
 }
+
+# ============================================
+# User Types
+# ============================================
 
 type User {
     id: ID!
     username: String!
     fullName: String
     role: Role
-    status: String
 }
 
 enum Role {
@@ -23,4 +35,28 @@ enum Role {
     TEACHER
     STUDENT
     PARENT
+}
+
+# ============================================
+# Message / Chat Types
+# ============================================
+
+type Message {
+    id: ID!
+    content: String!
+    sender: SenderType!
+    type: MessageType
+    timestamp: String
+    persona: String
+}
+
+enum SenderType {
+    USER
+    AI
+}
+
+enum MessageType {
+    TEXT
+    WIDGET_GRAPH
+    HOMEWORK_HIGHLIGHT
 }
