@@ -1,5 +1,11 @@
 .env
+.env.local
+.env.production.local
 node_modules/
-application.propeties
+application.properties
 .DS_Store
 .vscode/
+server/data/
+server/uploads/
+*.mv.db
+*.trace.db

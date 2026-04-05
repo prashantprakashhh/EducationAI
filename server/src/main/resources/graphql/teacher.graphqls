@@ -1,0 +1,126 @@
+type ClassDocument {
+    id: ID!
+    filename: String
+    summary: String
+    isProcessed: Boolean
+}
+
+type Attendance {
+    id: ID!
+    student: User
+    date: String
+    status: String
+}
+
+type Quiz {
+    id: ID!
+    title: String
+    questionsJson: String
+    examName: String
+    subject: String
+    totalMarks: Int
+    durationMinutes: Int
+    questionCount: Int
+    sourceInfo: String
+    createdAt: String
+}
+
+type QuizAttempt {
+    id: ID!
+    student: User
+    quiz: Quiz
+    score: Int
+    totalQuestions: Int
+    timeTakenSeconds: Int
+    answersJson: String
+    analysisJson: String
+    completedAt: String
+}
+
+type QuizAnalysis {
+    score: Int!
+    totalQuestions: Int!
+    percentage: Float!
+    timeTakenSeconds: Int
+    weakTopics: [String]
+    strongTopics: [String]
+    recommendations: [String]
+    topicBreakdown: [TopicBreakdown]
+    wrongQuestions: [WrongQuestion]
+}
+
+type TopicBreakdown {
+    topic: String!
+    correct: Int!
+    total: Int!
+    percentage: Float!
+}
+
+type WrongQuestion {
+    questionIndex: Int!
+    question: String!
+    selectedAnswer: String
+    correctAnswer: String!
+    explanation: String
+    topic: String
+}
+
+type ExamPaperSet {
+    id: ID!
+    examName: String
+    subject: String
+    uploadedByUserId: ID
+    totalSourceQuestions: Int
+    paperCount: Int
+    paperFilenames: String
+    documentIds: String
+    status: String
+    createdAt: String
+    processedAt: String
+}
+
+extend type Query {
+    allDocuments: [ClassDocument]
+    todayAttendance: [Attendance]
+    allQuizzes: [Quiz]
+    quizzesForDocument(documentId: ID!): [Quiz]
+    quizResults(quizId: ID!): [QuizAttempt]
+    studentQuizHistory(userId: ID!): [QuizAttempt]
+    # Exam Prep
+    userPaperSets(userId: ID!): [ExamPaperSet]
+    paperSetDetails(paperSetId: ID!): ExamPaperSet
+    studentExamInsights(userId: ID!): StudentExamInsights
+}
+
+type StudentExamInsights {
+    totalAttempts: Int
+    averageScore: Float
+    message: String
+    persistentWeakAreas: [String]
+    masteredAreas: [String]
+    aiReadinessAssessment: String
+    cumulativeTopicBreakdown: [TopicBreakdown]
+    recentTrend: [TrendPoint]
+}
+
+type TrendPoint {
+    quizTitle: String
+    score: Int
+    total: Int
+    percentage: Float
+    date: String
+}
+
+extend type Mutation {
+    processDocument(id: ID!): String
+    generateQuiz(documentId: ID!): Quiz
+    generateExamQuiz(documentId: ID!, examName: String!, subject: String, questionCount: Int): Quiz
+    submitQuiz(userId: ID!, quizId: ID!, answers: [Int]!, timeTakenSeconds: Int): QuizAttempt
+    submitQuizWithAnalysis(userId: ID!, quizId: ID!, answers: [Int]!, timeTakenSeconds: Int): QuizAnalysis
+    markAttendanceVoice(transcript: String!): [Attendance]
+    # Exam Prep
+    generateQuizFromPapers(paperSetId: ID!, questionCount: Int): Quiz
+    submitExamPrepQuiz(userId: ID!, quizId: ID!, answers: [Int]!, timeTakenSeconds: Int): QuizAnalysis
+    deleteQuiz(quizId: ID!): Boolean
+    deleteDocument(documentId: ID!): Boolean
+}

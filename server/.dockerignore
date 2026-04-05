@@ -1,0 +1,11 @@
+target/
+data/
+uploads/
+.mvn/
+.idea/
+*.iml
+.env
+*.log
+.git
+.gitignore
+HELP.md

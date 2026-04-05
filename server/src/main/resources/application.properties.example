@@ -1,0 +1,38 @@
+spring.application.name=EduAI
+server.port=8080
+
+# --- Database Configuration (H2 File-based for persistence) ---
+spring.datasource.url=jdbc:h2:file:./data/edudb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=password
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+spring.jpa.hibernate.ddl-auto=update
+
+# --- AI Configuration ---
+gemini.api.key=${GEMINI_API_KEY:}
+gemini.base-url=https://generativelanguage.googleapis.com/v1beta/openai
+gemini.model=gemini-2.0-flash
+gemini.embedding-model=embedding-001
+
+# --- File Upload ---
+spring.servlet.multipart.max-file-size=50MB
+spring.servlet.multipart.max-request-size=50MB
+
+# --- Disable OpenAI Auto-Configuration ---
+spring.autoconfigure.exclude=org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration
+
+# --- JWT Configuration ---
+# Generate a secure key with: openssl rand -base64 32
+# Then set it here or via JWT_SECRET environment variable
+jwt.secret=${JWT_SECRET:REPLACE_ME_WITH_openssl_rand_base64_32_OUTPUT}
+
+# --- CORS Configuration ---
+cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+# --- Admin Seed Configuration ---
+admin.seed.username=${ADMIN_USERNAME:admin}
+admin.seed.email=${ADMIN_EMAIL:admin@clatone.co.in}
+admin.seed.password=${ADMIN_PASSWORD:CHANGE_ME}
+admin.seed.fullName=${ADMIN_FULLNAME:System Administrator}
