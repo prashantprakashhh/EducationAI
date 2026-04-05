@@ -14,10 +14,10 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.annotation.PostConstruct;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class SocraticAiService {
 
@@ -33,9 +32,25 @@ public class SocraticAiService {
     private final UserRepository userRepository;
     private final StudentProfileRepository studentProfileRepository;
     private final PersonaPrompts personaPrompts;
-    private final ChatModel chatModel;
+    @Autowired(required = false)
+    private ChatModel chatModel;
     private final ProgressService progressService;
     private final AiFeedbackRepository aiFeedbackRepository;
+
+    @Autowired
+    public SocraticAiService(MessageRepository messageRepository,
+                             UserRepository userRepository,
+                             StudentProfileRepository studentProfileRepository,
+                             PersonaPrompts personaPrompts,
+                             ProgressService progressService,
+                             AiFeedbackRepository aiFeedbackRepository) {
+        this.messageRepository = messageRepository;
+        this.userRepository = userRepository;
+        this.studentProfileRepository = studentProfileRepository;
+        this.personaPrompts = personaPrompts;
+        this.progressService = progressService;
+        this.aiFeedbackRepository = aiFeedbackRepository;
+    }
 
     @Value("${spring.ai.openai.api-key:}")
     private String openAiApiKey;

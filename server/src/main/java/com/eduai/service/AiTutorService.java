@@ -19,19 +19,19 @@ import java.util.*;
 @Service
 public class AiTutorService {
     
-    private final ChatModel chatModel;
+    @Autowired(required = false)
+    private ChatModel chatModel;
+    
     private final MessageRepository messageRepository;
     private final StudentProfileRepository studentProfileRepository;
     private final UserRepository userRepository;
     private final PersonaPrompts personaPrompts;
     
     @Autowired
-    public AiTutorService(ChatModel chatModel, 
-                          MessageRepository messageRepository,
+    public AiTutorService(MessageRepository messageRepository,
                           StudentProfileRepository studentProfileRepository,
                           UserRepository userRepository,
                           PersonaPrompts personaPrompts) {
-        this.chatModel = chatModel;
         this.messageRepository = messageRepository;
         this.studentProfileRepository = studentProfileRepository;
         this.userRepository = userRepository;

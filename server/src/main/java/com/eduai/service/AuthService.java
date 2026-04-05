@@ -72,19 +72,19 @@ public class AuthService {
     }
 
     /**
-     * Login with username and password. Returns JWT token on success.
+     * Login with email and password. Returns JWT token on success.
      */
-    public AuthPayload login(String username, String password) {
-        // This will throw BadCredentialsException if invalid
+    public AuthPayload login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid email or password."));
+
+        // Authenticate using Spring Security (uses username internally)
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
+                new UsernamePasswordAuthenticationToken(user.getUsername(), password)
         );
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found."));
-
         String token = jwtService.generateToken(user);
-        log.info("User '{}' logged in successfully", username);
+        log.info("User '{}' logged in successfully", user.getUsername());
         return new AuthPayload(user, token);
     }
 
