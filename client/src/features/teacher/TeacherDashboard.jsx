@@ -4,10 +4,9 @@ import {
   Brain, Play, Loader2, FileQuestion, LogOut, Eye, X, Trash2,
   BookOpen, GraduationCap, Sparkles, ChevronDown
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-
-export default function TeacherDashboard() {
-  const { user, logout } = useAuth();
+export default function TeacherDashboard({ onLogout }) {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const logout = onLogout || (() => { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/login'; });
   const [activeTab, setActiveTab] = useState('classroom');
   
   return (
@@ -16,7 +15,7 @@ export default function TeacherDashboard() {
       <header className="bg-white border-b border-slate-200 px-8 py-4 sticky top-0 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-royal-500 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center">
               <BookOpen size={20} className="text-white" />
             </div>
             <div>
@@ -64,7 +63,7 @@ function TabButton({ active, onClick, icon: Icon, label }) {
       onClick={onClick}
       className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
         active 
-          ? 'bg-white text-royal-700 shadow-sm border border-slate-200' 
+          ? 'bg-white text-blue-800 shadow-sm border border-slate-200' 
           : 'text-slate-500 hover:text-slate-700'
       }`}
     >
@@ -150,7 +149,7 @@ function ClassroomManager() {
       {/* Voice Control Panel */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <Mic className="text-royal-500" /> Voice Attendance
+          <Mic className="text-blue-600" /> Voice Attendance
         </h2>
         
         <div className="flex flex-col items-center justify-center py-10 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 mb-6">
@@ -159,7 +158,7 @@ function ClassroomManager() {
             className={`w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-lg ${
               isListening 
                 ? 'bg-rose-500 text-white animate-pulse ring-4 ring-rose-200' 
-                : 'bg-royal-500 text-white hover:shadow-xl'
+                : 'bg-blue-600 text-white hover:shadow-xl'
             }`}
           >
             {isListening ? <MicOff size={32} /> : <Mic size={32} />}
@@ -181,7 +180,7 @@ function ClassroomManager() {
         </h2>
         
         {loading ? (
-          <div className="flex justify-center py-10"><Loader2 className="animate-spin text-royal-500" /></div>
+          <div className="flex justify-center py-10"><Loader2 className="animate-spin text-blue-600" /></div>
         ) : attendanceList.length > 0 ? (
           <ul className="space-y-2">
             {attendanceList.map((record) => (
@@ -362,7 +361,7 @@ function ContentStudio() {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
         <div className="bg-white w-full max-w-2xl max-h-[80vh] rounded-2xl shadow-xl overflow-hidden flex flex-col">
-          <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-royal-600">
+          <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-blue-700">
             <h3 className="font-bold text-white">{previewQuiz.title} (Preview)</h3>
             <button onClick={() => setPreviewQuiz(null)} className="text-white/70 hover:text-white"><X size={20} /></button>
           </div>
@@ -392,8 +391,8 @@ function ContentStudio() {
       {/* Upload Section */}
       <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center">
         <div className="max-w-md mx-auto">
-          <div className="w-16 h-16 bg-royal-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Upload className="text-royal-600" size={32} />
+          <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Upload className="text-blue-700" size={32} />
           </div>
           <h2 className="text-xl font-bold text-slate-800 mb-2">Upload Study Material</h2>
           <p className="text-slate-500 mb-6">Support for PDF, TXT (Max 500MB)</p>
@@ -402,12 +401,12 @@ function ContentStudio() {
             <input 
               type="file" 
               onChange={e => setFile(e.target.files[0])}
-              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-royal-50 file:text-royal-700 hover:file:bg-royal-100 cursor-pointer"
+              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-800 hover:file:bg-blue-100 cursor-pointer"
             />
             <button 
               type="submit" 
               disabled={!file || uploading}
-              className="px-6 py-2.5 bg-royal-500 text-white rounded-xl font-medium hover:bg-royal-600 disabled:opacity-50 transition-all shadow-md"
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 transition-all shadow-md"
             >
               {uploading ? 'Uploading...' : 'Process'}
             </button>
@@ -421,10 +420,10 @@ function ContentStudio() {
           <h3 className="font-bold text-slate-800 mb-4">Processed Documents</h3>
           <div className="space-y-3">
             {documents.map(doc => (
-              <div key={doc.id} className="p-4 border border-slate-200 rounded-xl hover:border-royal-300 hover:shadow-sm transition-all">
+              <div key={doc.id} className="p-4 border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex items-center gap-2">
-                    <FileText size={18} className="text-royal-500" />
+                    <FileText size={18} className="text-blue-600" />
                     <span className="font-medium text-slate-700">{doc.filename}</span>
                   </div>
                   {doc.isProcessed ? (
@@ -439,7 +438,7 @@ function ContentStudio() {
                 <div className="flex items-center justify-between">
                   <button 
                     onClick={() => loadQuizzes(doc.id)}
-                    className="text-xs flex items-center gap-1 text-royal-600 font-medium hover:bg-royal-50 px-3 py-1.5 rounded-lg transition-colors"
+                    className="text-xs flex items-center gap-1 text-blue-700 font-medium hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
                   >
                     <FileQuestion size={14} /> Manage Quizzes
                   </button>
@@ -465,7 +464,7 @@ function ContentStudio() {
           <h3 className="font-bold text-slate-800 mb-4 flex items-center justify-between">
             <span>{selectedDoc ? "Quizzes" : "Select a Document"}</span>
             {selectedDoc && (
-              <button onClick={() => handleGenerateQuiz(selectedDoc)} className="text-xs bg-royal-500 text-white px-4 py-1.5 rounded-lg hover:bg-royal-600 shadow-sm">
+              <button onClick={() => handleGenerateQuiz(selectedDoc)} className="text-xs bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 shadow-sm">
                 + New Quiz
               </button>
             )}
@@ -474,14 +473,14 @@ function ContentStudio() {
           {selectedDoc ? (
             <div className="space-y-4">
               {quizzes.map(quiz => (
-                <div key={quiz.id} className="border border-slate-200 rounded-xl p-4 hover:border-royal-200 transition-all">
+                <div key={quiz.id} className="border border-slate-200 rounded-xl p-4 hover:border-blue-200 transition-all">
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
                       <h4 className="font-medium text-sm text-slate-700">{quiz.title}</h4>
-                      <button onClick={() => setPreviewQuiz(quiz)} className="text-slate-400 hover:text-royal-600 transition-colors" title="Preview"><Eye size={14}/></button>
+                      <button onClick={() => setPreviewQuiz(quiz)} className="text-slate-400 hover:text-blue-700 transition-colors" title="Preview"><Eye size={14}/></button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => viewResults(quiz.id)} className="text-xs text-royal-600 hover:underline font-medium">View Scores</button>
+                      <button onClick={() => viewResults(quiz.id)} className="text-xs text-blue-700 hover:underline font-medium">View Scores</button>
                       <button
                         onClick={() => handleDeleteQuiz(quiz.id)}
                         disabled={deletingQuizId === quiz.id}
@@ -503,7 +502,7 @@ function ContentStudio() {
                           {results.attempts.map(attempt => (
                             <li key={attempt.id} className="flex justify-between text-xs">
                               <span className="text-slate-700">{attempt.student.fullName}</span>
-                              <span className="font-mono font-bold text-royal-600">{attempt.score}/{attempt.totalQuestions}</span>
+                              <span className="font-mono font-bold text-blue-700">{attempt.score}/{attempt.totalQuestions}</span>
                             </li>
                           ))}
                         </ul>
